@@ -5,7 +5,7 @@ use clap::Subcommand;
 #[derive(Parser, Debug)]
 #[command(
     author = "wyvernbw",
-    about = "a cli program to run and debug godot scenes, built in rust 🦀",
+    about = "🦆🌊 Golduck. a cli program to run and debug godot scenes, built in rust 🦀",
     version = "0.1.0"
 )]
 pub struct GolduckArgs {
