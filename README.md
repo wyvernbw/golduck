@@ -1,6 +1,6 @@
 # golduck
 a cli program to run and debug godot scenes, built in rust 🦀
-
+```sh
 Usage: golduck.exe [OPTIONS] <COMMAND>
 
 Commands:
@@ -15,3 +15,4 @@ Options:
   -e, --no-error  Silence the godot console errors
   -h, --help      Print help
   -V, --version   Print version
+```
