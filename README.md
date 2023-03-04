@@ -1,5 +1,7 @@
 # 🦆🌊 golduck
+
 a cli program to run and debug godot scenes, built in rust 🦀
+
 ```sh
 Usage: golduck.exe [OPTIONS] <COMMAND>
 
@@ -16,3 +18,7 @@ Options:
   -h, --help      Print help
   -V, --version   Print version
 ```
+
+## Installation
+
+- Crates.io: `cargo install golduck`
