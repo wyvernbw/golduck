@@ -1,4 +1,4 @@
-# golduck
+# 🦆🌊 golduck
 a cli program to run and debug godot scenes, built in rust 🦀
 ```sh
 Usage: golduck.exe [OPTIONS] <COMMAND>
