@@ -66,22 +66,49 @@ fn ask_for_scene_name() -> anyhow::Result<String> {
     Ok(answer)
 }
 
-fn main() -> anyhow::Result<()> {
-    use args::Commands;
-    let args = GolduckArgs::parse();
-    let scene_name = args.command.scene_name();
-    let scene_name = match scene_name {
-        Some(name) => name.to_owned(),
-        None => ask_for_scene_name()?,
-    };
+fn godot_process(args: &args::GolduckArgs) -> std::process::Command {
+    let mut process = std::process::Command::new("godot");
+    process
+        .stdout(match args.silence {
+            false => std::process::Stdio::inherit(),
+            true => std::process::Stdio::null(),
+        })
+        .stderr(match args.no_error {
+            false => std::process::Stdio::inherit(),
+            true => std::process::Stdio::null(),
+        });
+    process
+}
 
-    let run_mode = match args.command {
-        Commands::Run(_) => "".to_string(),
-        Commands::Debug(_) => "--debug".to_string(),
-    };
-    std::process::Command::new("godot")
-        .args(&[run_mode, scene_name])
-        .spawn()?;
+fn main() -> anyhow::Result<()> {
+    let args = GolduckArgs::parse();
+
+    use args::Commands::*;
+    match args.command {
+        Run(_) | Debug(_) => {
+            let scene_name = args.command.scene_name();
+            let scene_name = match scene_name {
+                Some(name) => name.to_owned(),
+                None => ask_for_scene_name()?,
+            };
+            let run_mode = match args.command {
+                PlayDebug => unreachable!(),
+                Play => unreachable!(),
+                Run(_) => "".to_string(),
+                Debug(_) => "--debug".to_string(),
+            };
+            let mut handle = godot_process(&args).args(&[run_mode, scene_name]).spawn()?;
+            handle.wait()?;
+        }
+        Play => {
+            let mut handle = godot_process(&args).spawn()?;
+            handle.wait()?;
+        }
+        PlayDebug => {
+            let mut handle = godot_process(&args).arg("--debug").spawn()?;
+            handle.wait()?;
+        }
+    }
 
     Ok(())
 }
