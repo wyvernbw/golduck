@@ -33,9 +33,9 @@ pub enum Commands {
     Play,
     /// Play the project in debug mode
     PlayDebug,
-    /// Run a specific scene, supports fuzzy findig
+    /// Run a specific scene, supports fuzzy finding
     Run(Scene),
-    /// Debug a specific scene, supports fuzzy findig
+    /// Debug a specific scene, supports fuzzy finding
     Debug(Scene),
 }
 
