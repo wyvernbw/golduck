@@ -1,6 +1,6 @@
 [package]
 name = "golduck"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "A cli tool to run and debug godot projects 🦆🌊"
 license = "MIT"
