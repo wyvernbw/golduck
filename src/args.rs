@@ -6,7 +6,7 @@ use clap::Subcommand;
 #[command(
     author = "wyvernbw",
     about = "🦆🌊 Golduck. a cli program to run and debug godot scenes, built in rust 🦀",
-    version = "0.1.0"
+    version = "0.1.2"
 )]
 pub struct GolduckArgs {
     #[arg(
@@ -37,17 +37,6 @@ pub enum Commands {
     Run(Scene),
     /// Debug a specific scene, supports fuzzy findig
     Debug(Scene),
-}
-
-impl Commands {
-    pub fn scene_name(&self) -> &Option<String> {
-        match self {
-            Commands::PlayDebug => &None,
-            Commands::Play => &None,
-            Commands::Run(scene) => &scene.name,
-            Commands::Debug(scene) => &scene.name,
-        }
-    }
 }
 
 #[derive(Args, Debug)]

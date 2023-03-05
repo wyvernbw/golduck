@@ -39,6 +39,9 @@ fn walk_dir(dir: &Path) -> io::Result<Box<dyn Iterator<Item = DirEntry>>> {
 }
 
 fn get_scenes() -> Result<Vec<String>, UserError> {
+    use spinners::Spinner;
+    use spinners::Spinners;
+    let mut sp = Spinner::new(Spinners::Arc, "indexing...".into());
     let entries = walk_dir(Path::new("."))
         .map_err(|_| UserError::NoScenesFound)?
         .filter(|entry| {
@@ -52,6 +55,8 @@ fn get_scenes() -> Result<Vec<String>, UserError> {
         })
         .map(|entry| entry.path().to_string_lossy().to_string())
         .collect::<Vec<_>>();
+    sp.stop();
+    println!();
     if entries.is_empty() {
         return Err(UserError::NoScenesFound);
     }
@@ -59,11 +64,25 @@ fn get_scenes() -> Result<Vec<String>, UserError> {
 }
 
 fn ask_for_scene_name() -> anyhow::Result<String> {
+    use std::process::exit;
     let scenes = get_scenes()?;
     let answer = Select::new("Select a scene to run:", scenes)
         .prompt()
-        .map_err(|_| UserError::PromptError)?;
+        .map_err(|err| match err {
+            inquire::InquireError::OperationCanceled => exit(0),
+            inquire::InquireError::OperationInterrupted => exit(0),
+            _ => UserError::PromptError,
+        })?;
     Ok(answer)
+}
+
+fn get_scene(scene: &args::Scene) -> anyhow::Result<String> {
+    let scene = scene.name.clone();
+    let scene = match scene {
+        Some(scene) => scene,
+        None => ask_for_scene_name()?,
+    };
+    Ok(scene)
 }
 
 fn godot_process(args: &args::GolduckArgs) -> std::process::Command {
@@ -85,19 +104,14 @@ fn main() -> anyhow::Result<()> {
 
     use args::Commands::*;
     match args.command {
-        Run(_) | Debug(_) => {
-            let scene_name = args.command.scene_name();
-            let scene_name = match scene_name {
-                Some(name) => name.to_owned(),
-                None => ask_for_scene_name()?,
-            };
-            let run_mode = match args.command {
-                PlayDebug => unreachable!(),
-                Play => unreachable!(),
-                Run(_) => "".to_string(),
-                Debug(_) => "--debug".to_string(),
-            };
-            let mut handle = godot_process(&args).args(&[run_mode, scene_name]).spawn()?;
+        Run(ref scene) => {
+            let scene = get_scene(scene)?;
+            let mut handle = godot_process(&args).arg(scene).spawn()?;
+            handle.wait()?;
+        }
+        Debug(ref scene) => {
+            let scene = get_scene(scene)?;
+            let mut handle = godot_process(&args).arg(scene).arg("--debug").spawn()?;
             handle.wait()?;
         }
         Play => {
