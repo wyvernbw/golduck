@@ -2,6 +2,8 @@
 
 a cli program to run and debug godot scenes, built in rust 🦀
 
+![Made with VHS](https://vhs.charm.sh/vhs-5RWohXblPyOclV8bIBZBhc.gif)
+
 ```sh
 Usage: golduck.exe [OPTIONS] <COMMAND>
 
@@ -22,3 +24,4 @@ Options:
 ## Installation
 
 - Crates.io: `cargo install golduck`
+- Github: [Releases](https://github.com/wyvernbw/golduck/releases/tag/1.0.0)
